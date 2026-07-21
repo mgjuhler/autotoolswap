@@ -30,6 +30,7 @@ public class AutoToolSwapClient implements ClientModInitializer {
 		Notifier.init(AutoToolSwapClient::config);
 		DurabilityMonitor monitor = new DurabilityMonitor();
 		ClientTickEvents.END_CLIENT_TICK.register(monitor::tick);
+		ClientTickEvents.END_CLIENT_TICK.register(ShulkerFlow::tick);
 		LOGGER.info("AutoToolSwap loaded");
 	}
 }
