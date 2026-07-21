@@ -25,8 +25,8 @@ public class AutoToolSwapClient implements ClientModInitializer {
 		ConfigIO.save(config, CONFIG_PATH);
 	}
 
-	public static void resetDebounce() {
-		if (monitor != null) monitor.resetDebounce();
+	public static void clearDebounceForSlot(int slot) {
+		if (monitor != null) monitor.clearSlot(slot);
 	}
 
 	@Override

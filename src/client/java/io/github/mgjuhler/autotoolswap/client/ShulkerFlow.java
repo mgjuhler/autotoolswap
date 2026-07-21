@@ -14,6 +14,7 @@ public final class ShulkerFlow {
 	private static String pendingItemId = null;     // itemId der ventes hentet fra en container
 	private static int pendingHotbarSlot = -1;      // hotbar-slot byttet skal lande i
 	private static boolean pendingStoreWorn = false;
+	private static String pendingWornItemId = null; // itemId på det slidte item der ventes byttet ud
 
 	private ShulkerFlow() {}
 
@@ -23,31 +24,46 @@ public final class ShulkerFlow {
 			SingleplayerExtractor.extract(mc, cfg, wornSlot, mainHand, c); // Task 9
 			return;
 		}
+		if (pendingItemId != null) {
+			// et bytte er allerede i gang — lad det først vinde, overskriv ikke ventetilstanden
+			Notifier.chat("autotoolswap.in_shulker", worn.getItemName());
+			return;
+		}
 		pendingItemId = c.itemId();
 		pendingHotbarSlot = mainHand ? mc.player.getInventory().getSelectedSlot() : -1;
 		pendingStoreWorn = cfg.oldItemAction == OldItemAction.STORE_IN_SHULKER;
+		pendingWornItemId = InventoryScanner.itemId(worn);
 		if (mainHand) SwapExecutor.selectSafeSlot(); // beskyt det slidte item indtil byttet
 		Notifier.chat("autotoolswap.in_shulker", worn.getItemName());
 	}
 
 	/** Kaldes hvert tick. Udfører ventende bytte når en container-skærm med itemet er åben. */
 	public static void tick(Minecraft mc) {
-		if (pendingItemId == null || mc.player == null) return;
+		if (mc.player == null) { clear(); return; }
+		if (pendingItemId == null) return;
 		if (!(mc.screen instanceof AbstractContainerScreen<?> screen)) return;
 		AbstractContainerMenu menu = screen.getMenu();
 		if (menu == mc.player.inventoryMenu) return;
+
+		if (pendingHotbarSlot >= 0
+				&& !InventoryScanner.itemId(mc.player.getInventory().getItem(pendingHotbarSlot)).equals(pendingWornItemId)) {
+			// spilleren har lavet om på hotbaren siden byttet blev planlagt — den ventende tilstand er forældet
+			clear();
+			return;
+		}
 
 		int containerSlots = menu.slots.size() - 36; // sidste 36 slots er altid spillerens inventory
 		for (int i = 0; i < containerSlots; i++) {
 			Slot slot = menu.slots.get(i);
 			ItemStack stack = slot.getItem();
 			if (stack.isEmpty() || !InventoryScanner.itemId(stack).equals(pendingItemId)) continue;
+			if (!slot.mayPickup(mc.player)) continue;
 
 			if (pendingHotbarSlot >= 0 && pendingStoreWorn) {
 				// ét SWAP-klik: erstatning ind i hotbaren, det slidte item ind i boksen
 				mc.gameMode.handleContainerInput(menu.containerId, i, pendingHotbarSlot,
 					ContainerInput.SWAP, mc.player);
-				Notifier.actionBar("autotoolswap.stored_old", stack.getItemName());
+				Notifier.chat("autotoolswap.stored_old", stack.getItemName());
 			} else if (pendingHotbarSlot >= 0) {
 				mc.gameMode.handleContainerInput(menu.containerId, i, pendingHotbarSlot,
 					ContainerInput.SWAP, mc.player);
@@ -64,9 +80,13 @@ public final class ShulkerFlow {
 				mc.gameMode.handleContainerInput(menu.containerId, i, 0,
 					ContainerInput.QUICK_MOVE, mc.player);
 			}
-			if (pendingHotbarSlot >= 0) mc.player.getInventory().setSelectedSlot(pendingHotbarSlot);
+			if (pendingHotbarSlot >= 0) {
+				mc.player.getInventory().setSelectedSlot(pendingHotbarSlot);
+				AutoToolSwapClient.clearDebounceForSlot(pendingHotbarSlot);
+			} else {
+				AutoToolSwapClient.clearDebounceForSlot(net.minecraft.world.entity.player.Inventory.SLOT_OFFHAND);
+			}
 			Notifier.actionBar("autotoolswap.swapped_from_shulker", stack.getItemName());
-			AutoToolSwapClient.resetDebounce();
 			clear();
 			return;
 		}
@@ -76,5 +96,6 @@ public final class ShulkerFlow {
 		pendingItemId = null;
 		pendingHotbarSlot = -1;
 		pendingStoreWorn = false;
+		pendingWornItemId = null;
 	}
 }

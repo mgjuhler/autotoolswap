@@ -19,9 +19,9 @@ public class DurabilityMonitor {
 	/** Slots (inventory-indeks, -1 = offhand) der allerede er håndteret; ryddes når indholdet ændrer sig. */
 	private final Set<String> handled = new HashSet<>();
 
-	/** Nulstiller alle håndterede slots, så monitoren kan genvurdere et item (fx efter en shulker-skærm lukkes). */
-	public void resetDebounce() {
-		handled.clear();
+	/** Rydder ét slots håndterede tilstand, så monitoren kan genvurdere netop det item (fx efter et shulker-bytte). */
+	public void clearSlot(int slot) {
+		handled.removeIf(k -> k.startsWith(slot + ":"));
 	}
 
 	public void tick(Minecraft mc) {
