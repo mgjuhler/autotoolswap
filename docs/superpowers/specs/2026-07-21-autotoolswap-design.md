@@ -1,7 +1,7 @@
 # AutoToolSwap — designdokument
 
 **Dato:** 2026-07-21
-**Status:** Godkendt af Michael (mgjuhler)
+**Status:** Godkendt af Mads Juhler (mgjuhler)
 
 ## Formål
 
