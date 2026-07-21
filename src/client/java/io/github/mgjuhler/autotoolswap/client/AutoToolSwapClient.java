@@ -15,6 +15,7 @@ public class AutoToolSwapClient implements ClientModInitializer {
 	public static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("autotoolswap.json");
 
 	private static AutoToolSwapConfig config;
+	private static DurabilityMonitor monitor;
 
 	public static AutoToolSwapConfig config() {
 		return config;
@@ -24,11 +25,15 @@ public class AutoToolSwapClient implements ClientModInitializer {
 		ConfigIO.save(config, CONFIG_PATH);
 	}
 
+	public static void resetDebounce() {
+		if (monitor != null) monitor.resetDebounce();
+	}
+
 	@Override
 	public void onInitializeClient() {
 		config = ConfigIO.load(CONFIG_PATH);
 		Notifier.init(AutoToolSwapClient::config);
-		DurabilityMonitor monitor = new DurabilityMonitor();
+		monitor = new DurabilityMonitor();
 		ClientTickEvents.END_CLIENT_TICK.register(monitor::tick);
 		ClientTickEvents.END_CLIENT_TICK.register(ShulkerFlow::tick);
 		LOGGER.info("AutoToolSwap loaded");

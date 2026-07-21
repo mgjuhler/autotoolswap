@@ -19,6 +19,11 @@ public class DurabilityMonitor {
 	/** Slots (inventory-indeks, -1 = offhand) der allerede er håndteret; ryddes når indholdet ændrer sig. */
 	private final Set<String> handled = new HashSet<>();
 
+	/** Nulstiller alle håndterede slots, så monitoren kan genvurdere et item (fx efter en shulker-skærm lukkes). */
+	public void resetDebounce() {
+		handled.clear();
+	}
+
 	public void tick(Minecraft mc) {
 		LocalPlayer player = mc.player;
 		AutoToolSwapConfig cfg = AutoToolSwapClient.config();
@@ -70,8 +75,9 @@ public class DurabilityMonitor {
 			if (cfg.oldItemAction == OldItemAction.DROP && wornEndsUpIn >= 0) {
 				SwapExecutor.throwSlot(wornEndsUpIn);
 				Notifier.chat("autotoolswap.dropped_old", stack.getItemName());
+			} else if (cfg.oldItemAction == OldItemAction.STORE_IN_SHULKER) {
+				Notifier.chat("autotoolswap.store_manually", stack.getItemName());
 			}
-			// STORE_IN_SHULKER for inventory-fund håndteres i Task 8 (pending store)
 		} else {
 			// Shulker-fund: Task 8 (semi-auto) og Task 9 (singleplayer fuld-auto)
 			ShulkerFlow.onShulkerCandidate(mc, cfg, stack, slot, mainHand, c);

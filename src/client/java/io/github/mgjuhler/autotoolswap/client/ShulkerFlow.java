@@ -55,6 +55,10 @@ public final class ShulkerFlow {
 				if (AutoToolSwapClient.config().oldItemAction == OldItemAction.KEEP) {
 					mc.gameMode.handleContainerInput(menu.containerId, i, 0,
 						ContainerInput.QUICK_MOVE, mc.player);
+				} else if (AutoToolSwapClient.config().oldItemAction == OldItemAction.DROP) {
+					mc.gameMode.handleContainerInput(menu.containerId, i, 1,
+						ContainerInput.THROW, mc.player);
+					Notifier.chat("autotoolswap.dropped_old", stack.getItemName());
 				}
 			} else {
 				mc.gameMode.handleContainerInput(menu.containerId, i, 0,
@@ -62,6 +66,7 @@ public final class ShulkerFlow {
 			}
 			if (pendingHotbarSlot >= 0) mc.player.getInventory().setSelectedSlot(pendingHotbarSlot);
 			Notifier.actionBar("autotoolswap.swapped_from_shulker", stack.getItemName());
+			AutoToolSwapClient.resetDebounce();
 			clear();
 			return;
 		}

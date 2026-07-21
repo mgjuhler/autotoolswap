@@ -5,5 +5,6 @@
 	"autotoolswap.no_replacement": "%s is almost broken — no replacement found",
 	"autotoolswap.stored_old": "Stored worn %s in shulker box",
 	"autotoolswap.dropped_old": "Dropped worn %s",
+	"autotoolswap.store_manually": "Kept worn %s — put it in a shulker box yourself",
 	"autotoolswap.title": "AutoToolSwap"
 }
