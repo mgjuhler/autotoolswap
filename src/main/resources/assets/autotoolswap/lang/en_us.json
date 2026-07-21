@@ -6,5 +6,19 @@
 	"autotoolswap.stored_old": "Stored worn %s in shulker box",
 	"autotoolswap.dropped_old": "Dropped worn %s",
 	"autotoolswap.store_manually": "Kept worn %s — put it in a shulker box yourself",
-	"autotoolswap.title": "AutoToolSwap"
+	"autotoolswap.title": "AutoToolSwap",
+	"autotoolswap.category.general": "General",
+	"autotoolswap.option.enabled": "Enabled",
+	"autotoolswap.option.threshold": "Durability threshold (%)",
+	"autotoolswap.option.old_item": "Worn item handling",
+	"autotoolswap.option.offhand": "Monitor offhand",
+	"autotoolswap.option.tools": "Monitor tools",
+	"autotoolswap.option.weapons": "Monitor melee weapons",
+	"autotoolswap.option.ranged": "Monitor bows & crossbows",
+	"autotoolswap.option.shield": "Monitor shields",
+	"autotoolswap.option.shears": "Monitor shears",
+	"autotoolswap.option.shulkers": "Search shulker boxes",
+	"autotoolswap.option.sp_full_auto": "Full auto in singleplayer",
+	"autotoolswap.option.chat": "Show messages",
+	"autotoolswap.option.sound": "Play sound"
 }

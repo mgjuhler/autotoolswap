@@ -6,5 +6,19 @@
 	"autotoolswap.stored_old": "Gemte slidt %s i shulkerboks",
 	"autotoolswap.dropped_old": "Smed slidt %s ud",
 	"autotoolswap.store_manually": "Beholdt slidt %s — læg den selv i en shulkerboks",
-	"autotoolswap.title": "AutoToolSwap"
+	"autotoolswap.title": "AutoToolSwap",
+	"autotoolswap.category.general": "Generelt",
+	"autotoolswap.option.enabled": "Slået til",
+	"autotoolswap.option.threshold": "Holdbarhedsgrænse (%)",
+	"autotoolswap.option.old_item": "Håndtering af slidt item",
+	"autotoolswap.option.offhand": "Overvåg offhand",
+	"autotoolswap.option.tools": "Overvåg værktøj",
+	"autotoolswap.option.weapons": "Overvåg nærkampsvåben",
+	"autotoolswap.option.ranged": "Overvåg buer og armbrøster",
+	"autotoolswap.option.shield": "Overvåg skjolde",
+	"autotoolswap.option.shears": "Overvåg sakse",
+	"autotoolswap.option.shulkers": "Søg i shulkerbokse",
+	"autotoolswap.option.sp_full_auto": "Fuld automatik i singleplayer",
+	"autotoolswap.option.chat": "Vis beskeder",
+	"autotoolswap.option.sound": "Afspil lyd"
 }

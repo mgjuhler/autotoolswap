@@ -12,7 +12,8 @@
 	"icon": "assets/autotoolswap/icon.png",
 	"environment": "client",
 	"entrypoints": {
-		"client": ["io.github.mgjuhler.autotoolswap.client.AutoToolSwapClient"]
+		"client": ["io.github.mgjuhler.autotoolswap.client.AutoToolSwapClient"],
+		"modmenu": ["io.github.mgjuhler.autotoolswap.client.ModMenuIntegration"]
 	},
 	"depends": {
 		"fabricloader": ">=0.19.3",
