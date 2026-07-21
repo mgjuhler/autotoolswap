@@ -5,6 +5,7 @@ import io.github.mgjuhler.autotoolswap.core.config.AutoToolSwapConfig;
 import io.github.mgjuhler.autotoolswap.core.config.OldItemAction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
@@ -40,10 +41,13 @@ public final class ShulkerFlow {
 	/** Kaldes hvert tick. Udfører ventende bytte når en container-skærm med itemet er åben. */
 	public static void tick(Minecraft mc) {
 		if (mc.player == null) { clear(); return; }
+		if (!AutoToolSwapClient.config().enabled || mc.player.isCreative() || mc.player.isSpectator()) { clear(); return; }
 		if (pendingItemId == null) return;
 		if (!(mc.screen instanceof AbstractContainerScreen<?> screen)) return;
 		AbstractContainerMenu menu = screen.getMenu();
 		if (menu == mc.player.inventoryMenu) return;
+		if (!(menu instanceof net.minecraft.world.inventory.ChestMenu
+				|| menu instanceof net.minecraft.world.inventory.ShulkerBoxMenu)) return;
 
 		if (pendingHotbarSlot >= 0
 				&& !InventoryScanner.itemId(mc.player.getInventory().getItem(pendingHotbarSlot)).equals(pendingWornItemId)) {
@@ -63,7 +67,7 @@ public final class ShulkerFlow {
 				// ét SWAP-klik: erstatning ind i hotbaren, det slidte item ind i boksen
 				mc.gameMode.handleContainerInput(menu.containerId, i, pendingHotbarSlot,
 					ContainerInput.SWAP, mc.player);
-				Notifier.chat("autotoolswap.stored_old", stack.getItemName());
+				Notifier.chat("autotoolswap.stored_old", wornName());
 			} else if (pendingHotbarSlot >= 0) {
 				mc.gameMode.handleContainerInput(menu.containerId, i, pendingHotbarSlot,
 					ContainerInput.SWAP, mc.player);
@@ -74,7 +78,7 @@ public final class ShulkerFlow {
 				} else if (AutoToolSwapClient.config().oldItemAction == OldItemAction.DROP) {
 					mc.gameMode.handleContainerInput(menu.containerId, i, 1,
 						ContainerInput.THROW, mc.player);
-					Notifier.chat("autotoolswap.dropped_old", stack.getItemName());
+					Notifier.chat("autotoolswap.dropped_old", wornName());
 				}
 			} else {
 				mc.gameMode.handleContainerInput(menu.containerId, i, 0,
@@ -90,6 +94,12 @@ public final class ShulkerFlow {
 			clear();
 			return;
 		}
+	}
+
+	/** Læsbart navn for det slidte item, udledt af det gemte itemId (fix: undgå at bruge erstatningens navn). */
+	private static Component wornName() {
+		var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(net.minecraft.resources.Identifier.parse(pendingWornItemId));
+		return new ItemStack(item).getItemName();
 	}
 
 	public static void clear() {

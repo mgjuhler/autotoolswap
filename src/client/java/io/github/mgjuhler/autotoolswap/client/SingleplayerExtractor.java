@@ -25,6 +25,8 @@ public final class SingleplayerExtractor {
 		int shulkerSlot = c.inventorySlot();
 		int boxSlot = c.slotInShulker();
 		int targetSlot = mainHand ? wornSlot : Inventory.SLOT_OFFHAND;
+		String expectedReplacementId = c.itemId();
+		String expectedWornId = InventoryScanner.itemId(mc.player.getInventory().getItem(targetSlot));
 
 		server.execute(() -> {
 			ServerPlayer sp = server.getPlayerList().getPlayer(uuid);
@@ -37,8 +39,10 @@ public final class SingleplayerExtractor {
 			shulker.get(DataComponents.CONTAINER).copyInto(items);
 			ItemStack replacement = items.get(boxSlot);
 			if (replacement.isEmpty()) return; // indholdet har ændret sig — opgiv stille
+			if (!InventoryScanner.itemId(replacement).equals(expectedReplacementId)) return; // indholdet er skiftet ud — opgiv stille
 
 			ItemStack worn = inv.getItem(targetSlot);
+			if (!InventoryScanner.itemId(worn).equals(expectedWornId)) return; // det slidte item er ikke længere det forventede — opgiv stille før mutation
 			items.set(boxSlot, action == OldItemAction.STORE_IN_SHULKER ? worn : ItemStack.EMPTY);
 			shulker.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(items));
 			inv.setItem(targetSlot, replacement);

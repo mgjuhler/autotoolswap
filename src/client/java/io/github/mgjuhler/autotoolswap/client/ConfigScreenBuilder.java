@@ -25,7 +25,9 @@ public final class ConfigScreenBuilder {
 		general.addEntry(e.startIntSlider(Component.translatable("autotoolswap.option.threshold"), cfg.thresholdPercent, 1, 50)
 			.setDefaultValue(10).setSaveConsumer(v -> cfg.thresholdPercent = v).build());
 		general.addEntry(e.startEnumSelector(Component.translatable("autotoolswap.option.old_item"), OldItemAction.class, cfg.oldItemAction)
-			.setDefaultValue(OldItemAction.KEEP).setSaveConsumer(v -> cfg.oldItemAction = v).build());
+			.setDefaultValue(OldItemAction.KEEP).setSaveConsumer(v -> cfg.oldItemAction = v)
+			.setEnumNameProvider(v -> Component.translatable("autotoolswap.old_item." + v.name().toLowerCase(java.util.Locale.ROOT)))
+			.build());
 		general.addEntry(e.startBooleanToggle(Component.translatable("autotoolswap.option.offhand"), cfg.monitorOffhand)
 			.setDefaultValue(true).setSaveConsumer(v -> cfg.monitorOffhand = v).build());
 		general.addEntry(e.startBooleanToggle(Component.translatable("autotoolswap.option.tools"), cfg.monitorTools)

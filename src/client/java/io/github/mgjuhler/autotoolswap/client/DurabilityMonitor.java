@@ -11,17 +11,20 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 public class DurabilityMonitor {
-	/** Slots (inventory-indeks, -1 = offhand) der allerede er håndteret; ryddes når indholdet ændrer sig. */
-	private final Set<String> handled = new HashSet<>();
+	/** Max antal forsøg pr. slot/item før vi giver op og går i stilhed. */
+	private static final int MAX_ATTEMPTS = 2;
+
+	/** Slots (inventory-indeks, -1 = offhand) der allerede er håndteret, med antal forsøg; ryddes når indholdet ændrer sig. */
+	private final Map<String, Integer> handled = new HashMap<>();
 
 	/** Rydder ét slots håndterede tilstand, så monitoren kan genvurdere netop det item (fx efter et shulker-bytte). */
 	public void clearSlot(int slot) {
-		handled.removeIf(k -> k.startsWith(slot + ":"));
+		handled.keySet().removeIf(k -> k.startsWith(slot + ":"));
 	}
 
 	public void tick(Minecraft mc) {
@@ -42,18 +45,21 @@ public class DurabilityMonitor {
 	                   ItemStack stack, int slot, boolean mainHand) {
 		String key = slot + ":" + InventoryScanner.itemId(stack);
 		if (stack.isEmpty() || !stack.isDamageableItem() || stack.has(DataComponents.UNBREAKABLE)) {
-			handled.removeIf(k -> k.startsWith(slot + ":"));
+			handled.keySet().removeIf(k -> k.startsWith(slot + ":"));
 			return;
 		}
 		if (!DurabilityCheck.isLow(stack.getDamageValue(), stack.getMaxDamage(), cfg.thresholdPercent)) {
-			handled.removeIf(k -> k.startsWith(slot + ":"));
+			handled.keySet().removeIf(k -> k.startsWith(slot + ":"));
 			return;
 		}
-		if (handled.contains(key)) return;
+		if (handled.getOrDefault(key, 0) >= MAX_ATTEMPTS) return; // opgivet — vent på tilstandsændring
 
 		ItemCategory category = ItemClassifier.classify(stack);
 		if (!ItemClassifier.isMonitored(category, cfg)) return;
-		handled.add(key);
+		int attempts = handled.merge(key, 1, Integer::sum);
+		if (attempts == MAX_ATTEMPTS) {
+			Notifier.chat("autotoolswap.gave_up", stack.getItemName());
+		}
 
 		String wornId = InventoryScanner.itemId(stack);
 		var candidates = InventoryScanner.scan(player, cfg.searchShulkers, mainHand ? slot : -2);
