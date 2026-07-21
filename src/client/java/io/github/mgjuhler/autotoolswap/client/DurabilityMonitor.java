@@ -35,7 +35,7 @@ public class DurabilityMonitor {
 
 	private void check(Minecraft mc, LocalPlayer player, AutoToolSwapConfig cfg,
 	                   ItemStack stack, int slot, boolean mainHand) {
-		String key = slot + ":" + InventoryScanner.itemId(stack) + ":" + stack.getDamageValue();
+		String key = slot + ":" + InventoryScanner.itemId(stack);
 		if (stack.isEmpty() || !stack.isDamageableItem() || stack.has(DataComponents.UNBREAKABLE)) {
 			handled.removeIf(k -> k.startsWith(slot + ":"));
 			return;
@@ -69,7 +69,7 @@ public class DurabilityMonitor {
 			Notifier.actionBar("autotoolswap.swapped", stack.getItemName());
 			if (cfg.oldItemAction == OldItemAction.DROP && wornEndsUpIn >= 0) {
 				SwapExecutor.throwSlot(wornEndsUpIn);
-				Notifier.actionBar("autotoolswap.dropped_old", stack.getItemName());
+				Notifier.chat("autotoolswap.dropped_old", stack.getItemName());
 			}
 			// STORE_IN_SHULKER for inventory-fund håndteres i Task 8 (pending store)
 		} else {
