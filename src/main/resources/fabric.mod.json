@@ -1,0 +1,27 @@
+{
+	"schemaVersion": 1,
+	"id": "autotoolswap",
+	"version": "${version}",
+	"name": "AutoToolSwap",
+	"description": "Automatically switches away from tools and weapons at low durability so they never break. Reads shulker boxes for replacements.",
+	"authors": ["Mads Juhler (mgjuhler)"],
+	"contact": {
+		"sources": "https://github.com/mgjuhler/autotoolswap"
+	},
+	"license": "MIT",
+	"icon": "assets/autotoolswap/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": ["io.github.mgjuhler.autotoolswap.client.AutoToolSwapClient"]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.1.2",
+		"java": ">=25",
+		"fabric-api": "*",
+		"cloth-config": "*"
+	},
+	"suggests": {
+		"modmenu": "*"
+	}
+}
