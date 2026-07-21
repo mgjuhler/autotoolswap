@@ -1,0 +1,9 @@
+{
+	"autotoolswap.swapped": "Swapped to fresh %s",
+	"autotoolswap.swapped_from_shulker": "Pulled fresh %s from shulker box",
+	"autotoolswap.in_shulker": "Replacement %s is in a shulker box — open it to swap",
+	"autotoolswap.no_replacement": "%s is almost broken — no replacement found",
+	"autotoolswap.stored_old": "Stored worn %s in shulker box",
+	"autotoolswap.dropped_old": "Dropped worn %s",
+	"autotoolswap.title": "AutoToolSwap"
+}
