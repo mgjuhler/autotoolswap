@@ -19,6 +19,11 @@ public final class ShulkerFlow {
 
 	private ShulkerFlow() {}
 
+	/** Om et shulker-bytte allerede er planlagt og venter på at spilleren åbner en container. */
+	public static boolean isPending() {
+		return pendingItemId != null;
+	}
+
 	public static void onShulkerCandidate(Minecraft mc, AutoToolSwapConfig cfg,
 	                                      ItemStack worn, int wornSlot, boolean mainHand, Candidate c) {
 		if (cfg.singleplayerFullAuto && mc.getSingleplayerServer() != null) {

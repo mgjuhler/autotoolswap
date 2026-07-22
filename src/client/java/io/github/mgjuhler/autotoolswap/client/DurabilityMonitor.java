@@ -56,14 +56,29 @@ public class DurabilityMonitor {
 
 		ItemCategory category = ItemClassifier.classify(stack);
 		if (!ItemClassifier.isMonitored(category, cfg)) return;
-		int attempts = handled.merge(key, 1, Integer::sum);
-		if (attempts == MAX_ATTEMPTS) {
-			Notifier.chat("autotoolswap.gave_up", stack.getItemName());
-		}
 
 		String wornId = InventoryScanner.itemId(stack);
 		var candidates = InventoryScanner.scan(player, cfg.searchShulkers, mainHand ? slot : -2);
 		Optional<Candidate> best = ReplacementSelector.selectBest(wornId, category, cfg.thresholdPercent, candidates);
+
+		if (best.isPresent() && best.get().location() == Candidate.Location.SHULKER) {
+			// Async sti: ShulkerFlow venter på at spilleren åbner en container, det kan tage
+			// mange ticks. Den holder IKKE med i attempts-tælleren (som er til de umiddelbare
+			// stier: inventory-bytte / ingen erstatning) — ellers udløser næste tick en falsk
+			// gave_up mens byttet reelt bare venter på spilleren. Sæt tælleren direkte til
+			// MAX_ATTEMPTS så vi ikke re-scanner hver tick; clearSlot() (kaldt fra ShulkerFlow
+			// når byttet fuldføres) og de tidlige clears ovenfor (ikke længere lav/tomt) re-armer.
+			if (!ShulkerFlow.isPending()) {
+				ShulkerFlow.onShulkerCandidate(mc, cfg, stack, slot, mainHand, best.get()); // Task 8/9
+			}
+			handled.put(key, MAX_ATTEMPTS);
+			return;
+		}
+
+		int attempts = handled.merge(key, 1, Integer::sum);
+		if (attempts == MAX_ATTEMPTS) {
+			Notifier.chat("autotoolswap.gave_up", stack.getItemName());
+		}
 
 		if (best.isEmpty()) {
 			if (mainHand && SwapExecutor.selectSafeSlot()) {
@@ -75,18 +90,13 @@ public class DurabilityMonitor {
 		}
 
 		Candidate c = best.get();
-		if (c.location() == Candidate.Location.INVENTORY) {
-			int wornEndsUpIn = swapFromInventory(player, c, slot, mainHand);
-			Notifier.actionBar("autotoolswap.swapped", stack.getItemName());
-			if (cfg.oldItemAction == OldItemAction.DROP && wornEndsUpIn >= 0) {
-				SwapExecutor.throwSlot(wornEndsUpIn);
-				Notifier.chat("autotoolswap.dropped_old", stack.getItemName());
-			} else if (cfg.oldItemAction == OldItemAction.STORE_IN_SHULKER) {
-				Notifier.chat("autotoolswap.store_manually", stack.getItemName());
-			}
-		} else {
-			// Shulker-fund: Task 8 (semi-auto) og Task 9 (singleplayer fuld-auto)
-			ShulkerFlow.onShulkerCandidate(mc, cfg, stack, slot, mainHand, c);
+		int wornEndsUpIn = swapFromInventory(player, c, slot, mainHand);
+		Notifier.actionBar("autotoolswap.swapped", stack.getItemName());
+		if (cfg.oldItemAction == OldItemAction.DROP && wornEndsUpIn >= 0) {
+			SwapExecutor.throwSlot(wornEndsUpIn);
+			Notifier.chat("autotoolswap.dropped_old", stack.getItemName());
+		} else if (cfg.oldItemAction == OldItemAction.STORE_IN_SHULKER) {
+			Notifier.chat("autotoolswap.store_manually", stack.getItemName());
 		}
 	}
 
