@@ -6,7 +6,7 @@
 	"autotoolswap.stored_old": "Gemte slidt %s i shulkerboks",
 	"autotoolswap.dropped_old": "Smed slidt %s ud",
 	"autotoolswap.store_manually": "Beholdt slidt %s — læg den selv i en shulkerboks",
-	"autotoolswap.gave_up": "Kunne ikke skifte %s — gør det manuelt",
+	"autotoolswap.gave_up": "Skifter ikke længere %s automatisk — håndtér den selv",
 	"autotoolswap.title": "AutoToolSwap",
 	"autotoolswap.category.general": "Generelt",
 	"autotoolswap.option.enabled": "Slået til",

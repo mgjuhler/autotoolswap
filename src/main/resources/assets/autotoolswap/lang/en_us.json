@@ -6,7 +6,7 @@
 	"autotoolswap.stored_old": "Stored worn %s in shulker box",
 	"autotoolswap.dropped_old": "Dropped worn %s",
 	"autotoolswap.store_manually": "Kept worn %s — put it in a shulker box yourself",
-	"autotoolswap.gave_up": "Could not swap %s — do it manually",
+	"autotoolswap.gave_up": "No longer auto-switching %s — handle it manually",
 	"autotoolswap.title": "AutoToolSwap",
 	"autotoolswap.category.general": "General",
 	"autotoolswap.option.enabled": "Enabled",

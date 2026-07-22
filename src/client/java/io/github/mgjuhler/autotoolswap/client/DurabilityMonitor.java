@@ -52,7 +52,17 @@ public class DurabilityMonitor {
 			handled.keySet().removeIf(k -> k.startsWith(slot + ":"));
 			return;
 		}
-		if (handled.getOrDefault(key, 0) >= MAX_ATTEMPTS) return; // opgivet — vent på tilstandsændring
+		int priorAttempts = handled.getOrDefault(key, 0);
+		if (priorAttempts >= MAX_ATTEMPTS) {
+			// Opgivet — men sig det præcis én gang, ved overgangen, og først EFTER at
+			// forsøgene reelt er brugt op (et vellykket skift når aldrig hertil, fordi
+			// slottet så ikke længere holder et lavt item og nulstilles ovenfor).
+			if (priorAttempts == MAX_ATTEMPTS) {
+				handled.put(key, MAX_ATTEMPTS + 1);
+				Notifier.chat("autotoolswap.gave_up", stack.getItemName());
+			}
+			return;
+		}
 
 		ItemCategory category = ItemClassifier.classify(stack);
 		if (!ItemClassifier.isMonitored(category, cfg)) return;
@@ -75,10 +85,7 @@ public class DurabilityMonitor {
 			return;
 		}
 
-		int attempts = handled.merge(key, 1, Integer::sum);
-		if (attempts == MAX_ATTEMPTS) {
-			Notifier.chat("autotoolswap.gave_up", stack.getItemName());
-		}
+		handled.merge(key, 1, Integer::sum);
 
 		if (best.isEmpty()) {
 			if (mainHand && SwapExecutor.selectSafeSlot()) {
