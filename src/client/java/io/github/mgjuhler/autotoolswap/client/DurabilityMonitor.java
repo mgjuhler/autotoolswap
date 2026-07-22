@@ -81,7 +81,9 @@ public class DurabilityMonitor {
 			if (!ShulkerFlow.isPending()) {
 				ShulkerFlow.onShulkerCandidate(mc, cfg, stack, slot, mainHand, best.get()); // Task 8/9
 			}
-			handled.put(key, MAX_ATTEMPTS);
+			// Parkér FORBI grænsen: shulker-stien har givet sin egen besked (in_shulker),
+			// og gave_up-overgangen ved == MAX_ATTEMPTS må ikke fyre for den.
+			handled.put(key, MAX_ATTEMPTS + 1);
 			return;
 		}
 
