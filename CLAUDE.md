@@ -4,10 +4,9 @@ Fabric **client-side** mod til Minecraft **26.1.2**: skifter automatisk væk fra
 
 ## Status (2026-07-22)
 
-- **v1.0.0 releaset**: merged til `master`, GitHub-release med jar: https://github.com/mgjuhler/autotoolswap/releases/tag/v1.0.0
+- **v1.0.1 releaset og uploadet til CurseForge**: understøtter MC 26.1/26.1.1/26.1.2 (`~26.1`-range, verificeret ved kompilering mod 26.1-jarren). GitHub-release: https://github.com/mgjuhler/autotoolswap/releases/tag/v1.0.1
+- CurseForge-projekt: "AutoToolSwap" (Utility & QoL, MIT, Cloth Config required + Mod Menu optional) — uploadet 2026-07-22, filen skulle igennem CF-godkendelse
 - Alle 14 JUnit-tests grønne; alle 10 in-game-testscenarier manuelt bekræftet af Mads
-- **Udestående:** CurseForge-upload (kræver Mads' login på authors.curseforge.com; `curseforge-logo.png` i repo-roden er lavet til projektsiden)
-- Mod-ikonet i `src/main/resources/assets/autotoolswap/icon.png` er opdateret EFTER v1.0.0-releasen — det kommer med i næste version
 
 ## Build og test
 
