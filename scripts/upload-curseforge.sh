@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 # Uploads a mod jar to CurseForge via the authors upload API.
-# Usage: upload-curseforge.sh <jar> <display-name> <mc-version> <changelog-file>
+# Usage: upload-curseforge.sh <jar> <mod-version> <mc-version> <changelog-file>
 # Token is read from ~/.curseforge/token.
+# Display name convention is fixed: "AutoToolSwap <mod-version>" - never anything else.
 set -euo pipefail
 
-JAR="${1:?usage: upload-curseforge.sh <jar> <display-name> <mc-version> <changelog-file>}"
-DISPLAY_NAME="${2:?missing display name}"
+JAR="${1:?usage: upload-curseforge.sh <jar> <mod-version> <mc-version> <changelog-file>}"
+MOD_VERSION="${2:?missing mod version}"
 MC_VERSION="${3:?missing minecraft version}"
 CHANGELOG_FILE="${4:?missing changelog file}"
+DISPLAY_NAME="AutoToolSwap $MOD_VERSION"
 
 PROJECT_ID=1620708
 API=https://minecraft.curseforge.com/api
