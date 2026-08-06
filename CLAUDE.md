@@ -25,15 +25,18 @@ Dobbeltklik-genveje: `run-client.bat` og `run-gametests.bat`.
 
 `src/gametest/` er et separat source set (oprettet af `fabricApi.configureTests` i
 build.gradle) med `AutoToolSwapGameTest`, der kører via Fabrics client-gametest-API:
-starter klienten, opretter en testverden og efterprøver 9 af de 11 scenarier fra
-den manuelle tjekliste (basis-skift, tier-fallback, sikker plads, offhand-skjold,
-fuld-auto shulker inkl. STORE_IN_SHULKER, DROP, creative, unbreakable, bue≠armbrøst).
-Testene muterer configen i hukommelsen (`AutoToolSwapClient.config()`) og asserter
-direkte på klientens inventory efter et antal ticks.
+starter klienten, opretter en testverden og efterprøver ALLE scenarier fra den
+manuelle tjekliste (basis-skift, tier-fallback, sikker plads, offhand-skjold,
+fuld-auto shulker inkl. STORE_IN_SHULKER, semi-auto shulker via programmatisk
+containeråbning med `gameMode.useItemOn`, DROP, creative, unbreakable,
+bue≠armbrøst, samt config-skærmen som røgtest: åbner, screenshottes, lukkes via
+"Save & Quit"-knappen og gem/indlæs-rundtur). Testene muterer configen i
+hukommelsen (`AutoToolSwapClient.config()`) og asserter direkte på klientens
+inventory efter et antal ticks. Screenshot lander i
+`build/run/clientGameTest/screenshots/`.
 
-**Stadig manuelt:** config-skærmen (Cloth Config UI) og semi-auto-shulker-flowet
-(kræver en rigtig containerskærm; kunne evt. automatiseres med gametest-API'ets
-`TestInput` senere).
+Eneste rest-manuelle: at klikke rundt i selve Cloth-widgets (slider/enum-cycling)
+— røgtesten driver ikke de enkelte widgets.
 
 ## Toolchain (versioner verificeret virkende)
 

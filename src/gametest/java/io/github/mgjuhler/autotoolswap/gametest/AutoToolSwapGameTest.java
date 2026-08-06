@@ -1,25 +1,34 @@
 package io.github.mgjuhler.autotoolswap.gametest;
 
 import io.github.mgjuhler.autotoolswap.client.AutoToolSwapClient;
+import io.github.mgjuhler.autotoolswap.client.ConfigScreenBuilder;
 import io.github.mgjuhler.autotoolswap.client.ShulkerFlow;
 import io.github.mgjuhler.autotoolswap.core.config.AutoToolSwapConfig;
+import io.github.mgjuhler.autotoolswap.core.config.ConfigIO;
 import io.github.mgjuhler.autotoolswap.core.config.OldItemAction;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Automated in-game checks mirroring the manual test checklist (plan Task 11).
- * Not covered here (still manual): the Cloth Config screen, and the semi-auto
- * shulker flow that requires the player to open a real container screen.
+ * The config screen scenario is a smoke test (opens, renders, persists via the
+ * same save path) — it does not drive individual Cloth Config widgets.
  */
 public class AutoToolSwapGameTest implements FabricClientGameTest {
 	private static final Logger LOG = LoggerFactory.getLogger("autotoolswap-gametest");
@@ -46,10 +55,12 @@ public class AutoToolSwapGameTest implements FabricClientGameTest {
 			noReplacement(ctx, server);
 			offhandShield(ctx, server);
 			fullAutoShulker(ctx, server);
+			semiAutoShulker(ctx, server);
 			dropOldItem(ctx, server);
 			creativeNoAction(ctx, server);
 			unbreakableIgnored(ctx, server);
 			bowNeverMatchesCrossbow(ctx, server);
+			configScreenSmoke(ctx);
 
 			LOG.info("All AutoToolSwap client gametests passed");
 		}
@@ -158,6 +169,60 @@ public class AutoToolSwapGameTest implements FabricClientGameTest {
 		pass("full-auto shulker extract + store", err);
 	}
 
+	/** Scenario 6 (semi-auto): pending swap executes when the player opens a container holding the replacement. */
+	private void semiAutoShulker(ClientGameTestContext ctx, TestServerContext server) {
+		reset(ctx, server);
+		ctx.runOnClient(mc -> {
+			AutoToolSwapConfig cfg = AutoToolSwapClient.config();
+			cfg.singleplayerFullAuto = false;
+			cfg.oldItemAction = OldItemAction.STORE_IN_SHULKER;
+		});
+		// A placed shulker box two blocks east of the player, holding the replacement.
+		server.runCommand("execute at @a run setblock ~2 ~ ~ minecraft:shulker_box");
+		server.runCommand("execute at @a run item replace block ~2 ~ ~ container.0 with minecraft:diamond_pickaxe");
+		// A shulker ITEM in the inventory holding a replacement makes the monitor schedule a pending swap.
+		server.runCommand("item replace entity @a inventory.0 with minecraft:shulker_box[minecraft:container=[{slot:0,item:{id:\"minecraft:diamond_pickaxe\",count:1}}]]");
+		ctx.waitTicks(2);
+		server.runCommand("item replace entity @a hotbar.0 with minecraft:diamond_pickaxe[minecraft:damage=" + WORN_DIAMOND_PICKAXE + "]");
+		ctx.waitTicks(SETTLE_TICKS);
+		String err = ctx.computeOnClient(mc -> {
+			if (!ShulkerFlow.isPending()) return "no pending swap was scheduled";
+			if (mc.player.getInventory().getSelectedSlot() == 0) return "safe slot was not selected while waiting";
+			return null;
+		});
+		pass("semi-auto shulker: pending + safe slot", err);
+
+		// Open the placed box programmatically — same code path as a right click.
+		ctx.runOnClient(mc -> {
+			BlockPos pos = mc.player.blockPosition().offset(2, 0, 0);
+			mc.gameMode.useItemOn(mc.player, InteractionHand.MAIN_HAND,
+				new BlockHitResult(Vec3.atCenterOf(pos), Direction.WEST, pos, false));
+		});
+		ctx.waitFor(mc -> mc.gui.screen() instanceof AbstractContainerScreen<?>);
+		ctx.waitTicks(SETTLE_TICKS);
+		err = ctx.computeOnClient(mc -> {
+			Inventory inv = mc.player.getInventory();
+			if (ShulkerFlow.isPending()) return "swap still pending after opening the container";
+			if (inv.getSelectedSlot() != 0) return "selected slot is " + inv.getSelectedSlot() + ", expected back on 0";
+			ItemStack hand = inv.getItem(0);
+			if (hand.getItem() != Items.DIAMOND_PICKAXE || hand.getDamageValue() != 0)
+				return "hotbar 0 is " + hand + ", expected the fresh pickaxe from the box";
+			if (!(mc.gui.screen() instanceof AbstractContainerScreen<?> screen))
+				return "container screen unexpectedly closed";
+			AbstractContainerMenu menu = screen.getMenu();
+			boolean wornInBox = false;
+			for (int i = 0; i < menu.slots.size() - 36; i++) {
+				ItemStack s = menu.slots.get(i).getItem();
+				if (s.getItem() == Items.DIAMOND_PICKAXE && s.getDamageValue() == WORN_DIAMOND_PICKAXE) wornInBox = true;
+			}
+			if (!wornInBox) return "worn pickaxe was not stored in the opened box";
+			return null;
+		});
+		ctx.runOnClient(mc -> mc.player.closeContainer());
+		ctx.waitTicks(5);
+		pass("semi-auto shulker: swap on container open", err);
+	}
+
 	/** Scenario 7: oldItemAction=DROP -> the worn item is thrown out after the swap. */
 	private void dropOldItem(ClientGameTestContext ctx, TestServerContext server) {
 		reset(ctx, server);
@@ -244,6 +309,38 @@ public class AutoToolSwapGameTest implements FabricClientGameTest {
 			return null;
 		});
 		pass("bow never matches crossbow", err);
+	}
+
+	/** Scenario 10 (smoke): config screen opens and renders; the save path persists to disk. */
+	private void configScreenSmoke(ClientGameTestContext ctx) {
+		ctx.setScreen(() -> ConfigScreenBuilder.build(null));
+		ctx.waitTicks(5);
+		String err = ctx.computeOnClient(mc -> mc.gui.screen() != null ? null : "config screen did not open");
+		pass("config screen opens", err);
+		ctx.takeScreenshot("autotoolswap-config-screen");
+
+		// Close via Cloth's save button when the label matches, otherwise dismiss.
+		if (!ctx.tryClickScreenButton("Save & Quit") && !ctx.tryClickScreenButton("Save & Done")) {
+			ctx.runOnClient(mc -> mc.gui.setScreen(null));
+		}
+		ctx.waitTicks(2);
+		err = ctx.computeOnClient(mc -> mc.gui.screen() == null ? null : "config screen did not close");
+		pass("config screen closes", err);
+
+		// Round-trip through the exact save path the screen's saving runnable uses.
+		ctx.runOnClient(mc -> {
+			AutoToolSwapClient.config().thresholdPercent = 15;
+			AutoToolSwapClient.saveConfig();
+		});
+		err = ctx.computeOnClient(mc -> {
+			AutoToolSwapConfig loaded = ConfigIO.load(AutoToolSwapClient.CONFIG_PATH);
+			return loaded.thresholdPercent == 15 ? null : "saved threshold did not persist";
+		});
+		ctx.runOnClient(mc -> {
+			AutoToolSwapClient.config().thresholdPercent = 10;
+			AutoToolSwapClient.saveConfig();
+		});
+		pass("config save/load round-trip", err);
 	}
 
 	/** Clears inventory and monitor state, resets config to known values (full-auto OFF, KEEP). */
