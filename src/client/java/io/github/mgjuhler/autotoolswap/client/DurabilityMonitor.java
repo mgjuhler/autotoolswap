@@ -32,7 +32,7 @@ public class DurabilityMonitor {
 		AutoToolSwapConfig cfg = AutoToolSwapClient.config();
 		if (player == null || !cfg.enabled) return;
 		if (player.isCreative() || player.isSpectator()) return;
-		if (mc.screen != null) return; // rør ikke inventory mens en skærm er åben
+		if (mc.gui.screen() != null) return; // rør ikke inventory mens en skærm er åben
 
 		int selected = player.getInventory().getSelectedSlot();
 		check(mc, player, cfg, player.getInventory().getSelectedItem(), selected, true);

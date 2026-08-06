@@ -31,7 +31,7 @@ public final class Notifier {
 		Component component = Component.translatable(langKey, args);
 		if (cfg.chatNotifications) {
 			if (overlay) {
-				mc.gui.setOverlayMessage(component, false);
+				mc.gui.hud.setOverlayMessage(component, false);
 			} else {
 				mc.player.sendSystemMessage(component);
 			}

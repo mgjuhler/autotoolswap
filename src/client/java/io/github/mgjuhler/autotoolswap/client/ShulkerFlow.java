@@ -48,7 +48,7 @@ public final class ShulkerFlow {
 		if (mc.player == null) { clear(); return; }
 		if (!AutoToolSwapClient.config().enabled || mc.player.isCreative() || mc.player.isSpectator()) { clear(); return; }
 		if (pendingItemId == null) return;
-		if (!(mc.screen instanceof AbstractContainerScreen<?> screen)) return;
+		if (!(mc.gui.screen() instanceof AbstractContainerScreen<?> screen)) return;
 		AbstractContainerMenu menu = screen.getMenu();
 		if (menu == mc.player.inventoryMenu) return;
 		if (!(menu instanceof net.minecraft.world.inventory.ChestMenu
