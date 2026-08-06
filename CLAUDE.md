@@ -93,4 +93,4 @@ Klient-jarren hentes via piston-meta version-manifestet (ingen `client_mappings`
 4. `gradlew build` + 14 JUnit-tests grønne
 5. `gradlew runClientGameTest` — hele in-game-tjeklisten kører automatisk (14 tjek)
 6. Bump `mod_version`, merge, GitHub-release med jar (`gh release create`)
-7. CurseForge-upload: **tjek FØRST om Mads allerede har uploadet filen** (spørg, eller se fillisten på CF) — så `bash scripts/upload-curseforge.sh build/libs/autotoolswap-X.Y.Z.jar X.Y.Z NN.N <changelog.md>`. Display name er ALTID kun "AutoToolSwap X.Y.Z" (aldrig "(MC …)"-suffiks — scriptet danner det selv). Token i `~/.curseforge/token` (kun denne maskine; læg master i kf_claude_sync/secrets når muligt), projekt-id 1620708 står i scriptet
+7. CurseForge-upload: **tjek FØRST om Mads allerede har uploadet filen** (spørg, eller se fillisten på CF) — så `bash scripts/upload-curseforge.sh build/libs/autotoolswap-X.Y.Z.jar X.Y.Z NN.N <changelog.md>`. Display name er ALTID kun "AutoToolSwap X.Y.Z" (aldrig "(MC …)"-suffiks — scriptet danner det selv). Token i `~/.curseforge/token` (synkes på tværs af maskiner via kf_claude_sync/secrets/curseforge/token), projekt-id 1620708 står i scriptet
