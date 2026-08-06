@@ -4,7 +4,7 @@ Fabric **client-side** mod til Minecraft **26.1.2**: skifter automatisk væk fra
 
 ## Status (2026-08-06)
 
-- **v1.1.0 releaset til GitHub**: understøtter MC 26.2 (`~26.2`). https://github.com/mgjuhler/autotoolswap/releases/tag/v1.1.0 — CurseForge-upload afventer Mads (browser-trin). API-ændringer i 26.2: `Minecraft.screen` → `mc.gui.screen()`, `Gui.setOverlayMessage` → `mc.gui.hud.setOverlayMessage` (ny Hud-klasse)
+- **v1.1.0 releaset til GitHub OG uploadet til CurseForge via API** (file id 8589005, afventer CF-godkendelse): understøtter MC 26.2 (`~26.2`). https://github.com/mgjuhler/autotoolswap/releases/tag/v1.1.0 — API-ændringer i 26.2: `Minecraft.screen` → `mc.gui.screen()`, `Gui.setOverlayMessage` → `mc.gui.hud.setOverlayMessage` (ny Hud-klasse)
 - **v1.0.1 releaset og uploadet til CurseForge**: understøtter MC 26.1/26.1.1/26.1.2 (`~26.1`-range). GitHub-release: https://github.com/mgjuhler/autotoolswap/releases/tag/v1.0.1
 - CurseForge-projekt: "AutoToolSwap" (Utility & QoL, MIT, Cloth Config required + Mod Menu optional)
 - Alle 14 JUnit-tests grønne; hele in-game-tjeklisten er nu automatiseret som client gametests (14 tjek, alle grønne pr. 2026-08-06 — se testafsnittet)
@@ -91,5 +91,6 @@ Klient-jarren hentes via piston-meta version-manifestet (ingen `client_mappings`
 2. Hent ny klient-jar via piston-meta og verificér API-navne med javap ved kompilérfejl
 3. Opdatér Cloth Config/ModMenu-versioner (Modrinth API kan filtrere på game version)
 4. `gradlew build` + 14 JUnit-tests grønne
-5. Mads kører in-game-tjeklisten (plan Task 11) i `runClient`
-6. Bump `mod_version`, merge, GitHub-release med jar, upload til CurseForge
+5. `gradlew runClientGameTest` — hele in-game-tjeklisten kører automatisk (14 tjek)
+6. Bump `mod_version`, merge, GitHub-release med jar (`gh release create`)
+7. CurseForge-upload: `bash scripts/upload-curseforge.sh build/libs/autotoolswap-X.Y.Z.jar "AutoToolSwap X.Y.Z (MC NN.N)" NN.N <changelog.md>` — token i `~/.curseforge/token` (kun denne maskine; læg master i kf_claude_sync/secrets når muligt), projekt-id 1620708 står i scriptet
