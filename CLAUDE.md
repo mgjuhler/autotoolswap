@@ -12,12 +12,28 @@ Fabric **client-side** mod til Minecraft **26.1.2**: skifter automatisk væk fra
 
 ```powershell
 $env:JAVA_HOME = 'C:\Program Files\Eclipse Adoptium\jdk-25.0.3.9-hotspot'   # JDK 25 påkrævet
-.\gradlew.bat build      # kompilerer + kører tests; jar i build\libs\
-.\gradlew.bat test       # kun JUnit (14 tests: core-logik + config)
-.\gradlew.bat runClient  # starter Minecraft 26.1.2 med modden (testverden i run\)
+.\gradlew.bat build              # kompilerer + kører tests; jar i build\libs\
+.\gradlew.bat test               # kun JUnit (14 tests: core-logik + config)
+.\gradlew.bat runClient          # starter Minecraft med modden (testverden i run\)
+.\gradlew.bat runClientGameTest  # automatiske in-game-tests (~35 s, se nedenfor)
 ```
 
 I git bash: `sh gradlew ...` (ikke gradlew.bat). Kør ALTID tests før commit.
+Dobbeltklik-genveje: `run-client.bat` og `run-gametests.bat`.
+
+### Automatiske in-game-tests (client gametests)
+
+`src/gametest/` er et separat source set (oprettet af `fabricApi.configureTests` i
+build.gradle) med `AutoToolSwapGameTest`, der kører via Fabrics client-gametest-API:
+starter klienten, opretter en testverden og efterprøver 9 af de 11 scenarier fra
+den manuelle tjekliste (basis-skift, tier-fallback, sikker plads, offhand-skjold,
+fuld-auto shulker inkl. STORE_IN_SHULKER, DROP, creative, unbreakable, bue≠armbrøst).
+Testene muterer configen i hukommelsen (`AutoToolSwapClient.config()`) og asserter
+direkte på klientens inventory efter et antal ticks.
+
+**Stadig manuelt:** config-skærmen (Cloth Config UI) og semi-auto-shulker-flowet
+(kræver en rigtig containerskærm; kunne evt. automatiseres med gametest-API'ets
+`TestInput` senere).
 
 ## Toolchain (versioner verificeret virkende)
 
