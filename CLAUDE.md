@@ -2,11 +2,12 @@
 
 Fabric **client-side** mod til Minecraft **26.1.2**: skifter automatisk væk fra værktøj/våben med lav holdbarhed, før de går i stykker. Finder erstatninger i inventory og shulkerbokse (fuld-auto i singleplayer, semi-auto på servere). Inspireret af LowDurabilitySwitcher.
 
-## Status (2026-07-22)
+## Status (2026-08-06)
 
-- **v1.0.1 releaset og uploadet til CurseForge**: understøtter MC 26.1/26.1.1/26.1.2 (`~26.1`-range, verificeret ved kompilering mod 26.1-jarren). GitHub-release: https://github.com/mgjuhler/autotoolswap/releases/tag/v1.0.1
-- CurseForge-projekt: "AutoToolSwap" (Utility & QoL, MIT, Cloth Config required + Mod Menu optional) — uploadet 2026-07-22, filen skulle igennem CF-godkendelse
-- Alle 14 JUnit-tests grønne; alle 10 in-game-testscenarier manuelt bekræftet af Mads
+- **v1.1.0 releaset til GitHub**: understøtter MC 26.2 (`~26.2`). https://github.com/mgjuhler/autotoolswap/releases/tag/v1.1.0 — CurseForge-upload afventer Mads (browser-trin). API-ændringer i 26.2: `Minecraft.screen` → `mc.gui.screen()`, `Gui.setOverlayMessage` → `mc.gui.hud.setOverlayMessage` (ny Hud-klasse)
+- **v1.0.1 releaset og uploadet til CurseForge**: understøtter MC 26.1/26.1.1/26.1.2 (`~26.1`-range). GitHub-release: https://github.com/mgjuhler/autotoolswap/releases/tag/v1.0.1
+- CurseForge-projekt: "AutoToolSwap" (Utility & QoL, MIT, Cloth Config required + Mod Menu optional)
+- Alle 14 JUnit-tests grønne; hele in-game-tjeklisten er nu automatiseret som client gametests (14 tjek, alle grønne pr. 2026-08-06 — se testafsnittet)
 
 ## Build og test
 
