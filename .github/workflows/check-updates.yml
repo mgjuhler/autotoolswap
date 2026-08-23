@@ -1,0 +1,69 @@
+name: Check for updates
+
+# Daily check of Minecraft releases and build dependencies. Keeps a single
+# GitHub issue (label: update-check) in sync with the findings and closes it
+# when everything is up to date. Mads gets a notification whenever the issue
+# is created or its content changes.
+on:
+  schedule:
+    - cron: '30 5 * * *'   # 05:30 UTC daily
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run update check
+        id: check
+        run: python3 scripts/check-updates.py | tee report.md
+
+      - name: Sync issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LEVEL: ${{ steps.check.outputs.level }}
+          LATEST_RELEASE: ${{ steps.check.outputs.latest_release }}
+        run: |
+          set -euo pipefail
+          LABEL=update-check
+          gh label create "$LABEL" --description "Automatisk opdateringstjek" --color 0E8A16 --force >/dev/null
+
+          EXISTING=$(gh issue list --label "$LABEL" --state open --json number --jq '.[0].number // empty')
+
+          if [ "$LEVEL" = "none" ]; then
+            if [ -n "$EXISTING" ]; then
+              gh issue comment "$EXISTING" --body-file report.md
+              gh issue close "$EXISTING" --comment "Alt er ajour igen — lukker automatisk."
+              echo "Closed issue #$EXISTING"
+            else
+              echo "Nothing to do: everything up to date."
+            fi
+            exit 0
+          fi
+
+          if [ "$LEVEL" = "release" ]; then
+            TITLE="Ny Minecraft-release $LATEST_RELEASE — ny mod-release påkrævet"
+          else
+            TITLE="Nyere build-afhængigheder tilgængelige"
+          fi
+
+          if [ -z "$EXISTING" ]; then
+            gh issue create --title "$TITLE" --label "$LABEL" --body-file report.md
+            echo "Created new issue"
+            exit 0
+          fi
+
+          OLD_BODY=$(gh issue view "$EXISTING" --json body --jq .body)
+          CHANGED=$(python3 -c 'import sys; a=sys.argv[1].replace("\r","").strip(); b=open("report.md").read().strip(); print("0" if a==b else "1")' "$OLD_BODY")
+          if [ "$CHANGED" = "1" ]; then
+            gh issue edit "$EXISTING" --title "$TITLE" --body-file report.md
+            gh issue comment "$EXISTING" --body-file report.md
+            echo "Updated issue #$EXISTING (content changed)"
+          else
+            echo "Issue #$EXISTING unchanged"
+          fi

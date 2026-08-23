@@ -4,7 +4,7 @@ Fabric **client-side** mod til Minecraft **26.1.2**: skifter automatisk væk fra
 
 ## Status (2026-08-06)
 
-- **v1.1.0 releaset til GitHub OG uploadet til CurseForge via API** (file id 8589005, afventer CF-godkendelse): understøtter MC 26.2 (`~26.2`). https://github.com/mgjuhler/autotoolswap/releases/tag/v1.1.0 — API-ændringer i 26.2: `Minecraft.screen` → `mc.gui.screen()`, `Gui.setOverlayMessage` → `mc.gui.hud.setOverlayMessage` (ny Hud-klasse)
+- **v1.1.0 releaset til GitHub OG uploadet til CurseForge via API** (file id 8589005, CF-godkendt pr. 2026-08-23): understøtter MC 26.2 (`~26.2`). https://github.com/mgjuhler/autotoolswap/releases/tag/v1.1.0 — API-ændringer i 26.2: `Minecraft.screen` → `mc.gui.screen()`, `Gui.setOverlayMessage` → `mc.gui.hud.setOverlayMessage` (ny Hud-klasse)
 - **v1.0.1 releaset og uploadet til CurseForge**: understøtter MC 26.1/26.1.1/26.1.2 (`~26.1`-range). GitHub-release: https://github.com/mgjuhler/autotoolswap/releases/tag/v1.0.1
 - CurseForge-projekt: "AutoToolSwap" (Utility & QoL, MIT, Cloth Config required + Mod Menu optional)
 - Alle 14 JUnit-tests grønne; hele in-game-tjeklisten er nu automatiseret som client gametests (14 tjek, alle grønne pr. 2026-08-06 — se testafsnittet)
@@ -47,9 +47,9 @@ Eneste rest-manuelle: at klikke rundt i selve Cloth-widgets (slider/enum-cycling
 | Gradle | 9.5.1 (wrapper) |
 | fabric-loom | 1.17-SNAPSHOT |
 | Fabric Loader | 0.19.3 |
-| Fabric API | 0.155.2+26.1.2 |
-| Cloth Config | 26.1.154 (me.shedaniel maven — BEMÆRK: intet `+fabric`-suffix) |
-| ModMenu | 18.0.0 via **Modrinth maven** (`maven.modrinth:modmenu` — Terraformers-maven gav 502) |
+| Fabric API | 0.156.0+26.2 (nyeste 0.158.0+26.2 pr. 2026-08-23 — kun build-afh., bump ved næste release) |
+| Cloth Config | 26.2.155 (me.shedaniel maven — BEMÆRK: intet `+fabric`-suffix) |
+| ModMenu | 20.0.1 via **Modrinth maven** (`maven.modrinth:modmenu` — Terraformers-maven gav 502) |
 
 **Vigtigt om MC 26.1+:** Spillet er **unobfuskeret** — klassenavne bruges direkte, yarn findes ikke (stoppede ved 1.21.11), og loom bruger almindelige `api`/`implementation` (IKKE `modApi`/`modImplementation` — de findes ikke længere).
 
@@ -84,6 +84,15 @@ Klient-jarren hentes via piston-meta version-manifestet (ingen `client_mappings`
 
 - Spec: `docs/superpowers/specs/2026-07-21-autotoolswap-design.md`
 - Implementeringsplan (inkl. **manuel in-game-testtjekliste** i Task 11): `docs/superpowers/plans/2026-07-21-autotoolswap.md`
+
+## Overvågning af nye versioner
+
+`.github/workflows/check-updates.yml` kører `scripts/check-updates.py` dagligt (05:30 UTC)
+og holder ét GitHub-issue med label `update-check` ajour: oprettes/opdateres når der er
+en ny Minecraft-release (med tjek af om Fabric Loader/API, Cloth Config og Mod Menu
+er klar til den) eller nyere build-afhængigheder til den nuværende MC-version; lukkes
+automatisk når alt er ajour. Kør lokalt: `python3 scripts/check-updates.py`.
+Manuel kørsel: `gh workflow run check-updates.yml`. Snapshots udløser bevidst ikke noget.
 
 ## Ny Minecraft-version — opskrift
 
