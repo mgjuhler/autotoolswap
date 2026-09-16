@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
@@ -47,9 +48,9 @@ public final class SingleplayerExtractor {
 			shulker.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(items));
 			inv.setItem(targetSlot, replacement);
 			switch (action) {
-				case DROP -> sp.drop(worn, true);
+				case DROP -> sp.drop(worn, true, Prediction.SERVER_ONLY);
 				case KEEP -> {
-					if (!sp.getInventory().add(worn)) sp.drop(worn, true);
+					if (!sp.getInventory().add(worn)) sp.drop(worn, true, Prediction.SERVER_ONLY);
 				}
 				case STORE_IN_SHULKER -> {} // allerede lagt i boksen
 			}

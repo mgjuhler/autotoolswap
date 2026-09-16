@@ -16,8 +16,8 @@ A Fabric client mod for Minecraft that automatically swaps away from tools, weap
 
 ## Requirements
 
-- Minecraft 26.1.2
-- Fabric Loader >= 0.19.3
+- Minecraft 26.3 (use AutoToolSwap 1.1.0 for 26.2 and 1.0.1 for 26.1.x)
+- Fabric Loader >= 0.19.5
 - Fabric API
 - Cloth Config (required — used for the config screen and config file handling)
 - ModMenu (optional — only needed to open the config screen from the mod list)

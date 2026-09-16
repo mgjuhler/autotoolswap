@@ -1,9 +1,10 @@
 # AutoToolSwap — projektnoter
 
-Fabric **client-side** mod til Minecraft **26.1.2**: skifter automatisk væk fra værktøj/våben med lav holdbarhed, før de går i stykker. Finder erstatninger i inventory og shulkerbokse (fuld-auto i singleplayer, semi-auto på servere). Inspireret af LowDurabilitySwitcher.
+Fabric **client-side** mod til Minecraft **26.3**: skifter automatisk væk fra værktøj/våben med lav holdbarhed, før de går i stykker. Finder erstatninger i inventory og shulkerbokse (fuld-auto i singleplayer, semi-auto på servere). Inspireret af LowDurabilitySwitcher.
 
-## Status (2026-08-06)
+## Status (2026-09-16)
 
+- **v1.2.0 releaset til GitHub og uploadet til CurseForge via API**: understøtter MC 26.3 (`~26.3`). API-ændring i 26.3: `ServerPlayer.drop(ItemStack, boolean)` → `drop(ItemStack, boolean retainOwnership, Prediction)` — ny parameter styrer kun arm-sving (`SERVER_ONLY` når klienten ikke har forudsagt det). Cloth Config 26.3.158 og Mod Menu 21.0.0-beta.1 var på release-dagen kun mærket til 26.3-rc, men accepterer `minecraft >=26.3-` og består alle gametests.
 - **v1.1.0 releaset til GitHub OG uploadet til CurseForge via API** (file id 8589005, CF-godkendt pr. 2026-08-23): understøtter MC 26.2 (`~26.2`). https://github.com/mgjuhler/autotoolswap/releases/tag/v1.1.0 — API-ændringer i 26.2: `Minecraft.screen` → `mc.gui.screen()`, `Gui.setOverlayMessage` → `mc.gui.hud.setOverlayMessage` (ny Hud-klasse)
 - **v1.0.1 releaset og uploadet til CurseForge**: understøtter MC 26.1/26.1.1/26.1.2 (`~26.1`-range). GitHub-release: https://github.com/mgjuhler/autotoolswap/releases/tag/v1.0.1
 - CurseForge-projekt: "AutoToolSwap" (Utility & QoL, MIT, Cloth Config required + Mod Menu optional)
@@ -45,11 +46,11 @@ Eneste rest-manuelle: at klikke rundt i selve Cloth-widgets (slider/enum-cycling
 |---|---|
 | Java | 25 (Temurin, sti ovenfor) |
 | Gradle | 9.5.1 (wrapper) |
-| fabric-loom | 1.17-SNAPSHOT |
-| Fabric Loader | 0.19.3 |
-| Fabric API | 0.156.0+26.2 (nyeste 0.158.0+26.2 pr. 2026-08-23 — kun build-afh., bump ved næste release) |
-| Cloth Config | 26.2.155 (me.shedaniel maven — BEMÆRK: intet `+fabric`-suffix) |
-| ModMenu | 20.0.1 via **Modrinth maven** (`maven.modrinth:modmenu` — Terraformers-maven gav 502) |
+| fabric-loom | 1.17-SNAPSHOT (virker også med 26.3) |
+| Fabric Loader | 0.19.5 |
+| Fabric API | 0.160.6+26.3 |
+| Cloth Config | 26.3.158 (me.shedaniel maven — BEMÆRK: intet `+fabric`-suffix) |
+| ModMenu | 21.0.0-beta.1 via **Modrinth maven** (`maven.modrinth:modmenu` — Terraformers-maven gav 502) |
 
 **Vigtigt om MC 26.1+:** Spillet er **unobfuskeret** — klassenavne bruges direkte, yarn findes ikke (stoppede ved 1.21.11), og loom bruger almindelige `api`/`implementation` (IKKE `modApi`/`modImplementation` — de findes ikke længere).
 
@@ -60,6 +61,7 @@ Eneste rest-manuelle: at klikke rundt i selve Cloth-widgets (slider/enum-cycling
 - `ClickType` → `net.minecraft.world.inventory.ContainerInput`
 - `LocalPlayer.displayClientMessage` **findes ikke** → brug `mc.gui.setOverlayMessage(comp, false)` (action bar) / `player.sendSystemMessage(comp)` (chat)
 - `Item.getName()` kræver ItemStack → brug `new ItemStack(item).getItemName()`
+- 26.3: `ServerPlayer.drop(ItemStack, boolean)` findes ikke → `drop(stack, retainOwnership, net.minecraft.util.Prediction)` (samme `createItemStackToDrop(stack, false, retainOwnership)` som før)
 
 **Metode ved tvivl om API-navne:** slå op i den rigtige klient-jar med javap i stedet for at gætte:
 ```bash
@@ -98,7 +100,7 @@ Manuel kørsel: `gh workflow run check-updates.yml`. Snapshots udløser bevidst 
 
 1. Bump `minecraft_version`, `loader_version`, `fabric_api_version` m.fl. i `gradle.properties` (tjek https://fabricmc.net/develop og fabric-example-mod master)
 2. Hent ny klient-jar via piston-meta og verificér API-navne med javap ved kompilérfejl
-3. Opdatér Cloth Config/ModMenu-versioner (Modrinth API kan filtrere på game version)
+3. Opdatér Cloth Config/ModMenu-versioner (Modrinth API kan filtrere på game version). På release-dagen er de ofte kun mærket til `-rc` — tjek `depends.minecraft` i jarens fabric.mod.json; `check-updates.py` godtager RC-mærkede builds og skriver det
 4. `gradlew build` + 14 JUnit-tests grønne
 5. `gradlew runClientGameTest` — hele in-game-tjeklisten kører automatisk (14 tjek)
 6. Bump `mod_version`, merge, GitHub-release med jar (`gh release create`)

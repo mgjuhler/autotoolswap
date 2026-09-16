@@ -47,13 +47,30 @@ def read_props():
     return props
 
 
-def modrinth_latest(slug, game_version, loader="fabric"):
-    """Newest Modrinth version of `slug` for one game version; None if none exists."""
+def modrinth_match(slug, game_version, loader="fabric"):
+    """Newest Modrinth version of `slug` for one game version, as (version, exact).
+
+    Mods often ship on release day tagged only with the release candidates
+    (Cloth Config 26.3.158 was tagged 26.3-rc-1..3 when 26.3 came out), so a build
+    tagged "<version>-rc-N"/"-pre-N" counts as a fallback with exact=False.
+    Returns (None, False) if neither exists.
+    """
     versions = fetch(MODRINTH.format(slug=slug))
+    candidates = (game_version + "-rc-", game_version + "-pre-")
+    fallback = None
     for v in versions:  # Modrinth returns newest first
-        if loader in v["loaders"] and game_version in v["game_versions"]:
-            return v["version_number"]
-    return None
+        if loader not in v["loaders"]:
+            continue
+        if game_version in v["game_versions"]:
+            return v["version_number"], True
+        if fallback is None and any(g.startswith(candidates) for g in v["game_versions"]):
+            fallback = v["version_number"]
+    return fallback, False
+
+
+def modrinth_latest(slug, game_version, loader="fabric"):
+    """Newest Modrinth version of `slug` for one game version (exact or RC-tagged); None if none."""
+    return modrinth_match(slug, game_version, loader)[0]
 
 
 def gradle_coord(slug, version_number):
@@ -114,9 +131,10 @@ def main():
         report.append("| Fabric Loader | " + ("✅ understøttet" if latest_release in fabric_games else "❌ ikke i Fabric meta endnu") + " |")
         ready = latest_release in fabric_games
         for key, slug, label in deps:
-            v = modrinth_latest(slug, latest_release)
+            v, exact = modrinth_match(slug, latest_release)
             if v:
-                report.append(f"| {label} | ✅ {gradle_coord(slug, v)} |")
+                note = "" if exact else f" (mærket til {latest_release}-rc — kontrollér med gametests)"
+                report.append(f"| {label} | ✅ {gradle_coord(slug, v)}{note} |")
             else:
                 report.append(f"| {label} | ❌ ingen version til {latest_release} endnu |")
                 ready = False
