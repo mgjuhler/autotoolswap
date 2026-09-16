@@ -4,7 +4,7 @@ Fabric **client-side** mod til Minecraft **26.3**: skifter automatisk væk fra v
 
 ## Status (2026-09-16)
 
-- **v1.2.0 releaset til GitHub og uploadet til CurseForge via API**: understøtter MC 26.3 (`~26.3`). API-ændring i 26.3: `ServerPlayer.drop(ItemStack, boolean)` → `drop(ItemStack, boolean retainOwnership, Prediction)` — ny parameter styrer kun arm-sving (`SERVER_ONLY` når klienten ikke har forudsagt det). Cloth Config 26.3.158 og Mod Menu 21.0.0-beta.1 var på release-dagen kun mærket til 26.3-rc, men accepterer `minecraft >=26.3-` og består alle gametests.
+- **v1.2.0 releaset til GitHub og uploadet til CurseForge via API** (file id 8896277, 16-09-2026 — afventer CF-godkendelse): understøtter MC 26.3 (`~26.3`). API-ændring i 26.3: `ServerPlayer.drop(ItemStack, boolean)` → `drop(ItemStack, boolean retainOwnership, Prediction)` — ny parameter styrer kun arm-sving (`SERVER_ONLY` når klienten ikke har forudsagt det). Cloth Config 26.3.158 og Mod Menu 21.0.0-beta.1 var på release-dagen kun mærket til 26.3-rc, men accepterer `minecraft >=26.3-` og består alle gametests.
 - **v1.1.0 releaset til GitHub OG uploadet til CurseForge via API** (file id 8589005, CF-godkendt pr. 2026-08-23): understøtter MC 26.2 (`~26.2`). https://github.com/mgjuhler/autotoolswap/releases/tag/v1.1.0 — API-ændringer i 26.2: `Minecraft.screen` → `mc.gui.screen()`, `Gui.setOverlayMessage` → `mc.gui.hud.setOverlayMessage` (ny Hud-klasse)
 - **v1.0.1 releaset og uploadet til CurseForge**: understøtter MC 26.1/26.1.1/26.1.2 (`~26.1`-range). GitHub-release: https://github.com/mgjuhler/autotoolswap/releases/tag/v1.0.1
 - CurseForge-projekt: "AutoToolSwap" (Utility & QoL, MIT, Cloth Config required + Mod Menu optional)
