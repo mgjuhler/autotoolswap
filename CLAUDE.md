@@ -48,9 +48,9 @@ Eneste rest-manuelle: at klikke rundt i selve Cloth-widgets (slider/enum-cycling
 | Gradle | 9.5.1 (wrapper) |
 | fabric-loom | 1.17-SNAPSHOT (virker også med 26.3) |
 | Fabric Loader | 0.19.5 |
-| Fabric API | 0.160.6+26.3 |
-| Cloth Config | 26.3.158 (me.shedaniel maven — BEMÆRK: intet `+fabric`-suffix) |
-| ModMenu | 21.0.0-beta.1 via **Modrinth maven** (`maven.modrinth:modmenu` — Terraformers-maven gav 502) |
+| Fabric API | 0.162.0+26.3 |
+| Cloth Config | 26.3.159 (me.shedaniel maven — BEMÆRK: intet `+fabric`-suffix) |
+| ModMenu | 21.0.0 via **Modrinth maven** (`maven.modrinth:modmenu` — Terraformers-maven gav 502) |
 
 **Vigtigt om MC 26.1+:** Spillet er **unobfuskeret** — klassenavne bruges direkte, yarn findes ikke (stoppede ved 1.21.11), og loom bruger almindelige `api`/`implementation` (IKKE `modApi`/`modImplementation` — de findes ikke længere).
 
